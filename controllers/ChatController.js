@@ -100,13 +100,13 @@ const createGroupChat = asyncHandler(async (req, res) => {
   // Se a imagem de exibição não estiver selecionada, defina-a como padrão
   if (!displayPic) {
     displayPicData = {
-      cloudinary_id: "", // ( Refatorar para usar qq repositório )
+      avatar_id: "", // ( Refatorar para usar qq repositório )
       chatDisplayPic: process.env.DEFAULT_GROUP_DP,
     };
   } else {
     const uploadResponse = await cloudinary.uploader.upload(displayPic.path); //( Refatorar para usar qq repositório )
     displayPicData = {
-      cloudinary_id: uploadResponse.public_id, // ( Refatorar para usar qq repositório )
+      avatar_id: uploadResponse.public_id, // ( Refatorar para usar qq repositório )
       chatDisplayPic: uploadResponse.secure_url,
     };
     deleteFile(displayPic.path);
@@ -128,7 +128,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
 });
 
 const deleteGroupDP = asyncHandler(async (req, res) => {
-  const { currentDP, cloudinary_id, chatId } = req.body; // ( Refatorar para usar qq repositório )
+  const { currentDP, avatar_id, chatId } = req.body; // ( Refatorar para usar qq repositório )
 
   if (!currentDP || !chatId) {
     res.status(400);
@@ -141,11 +141,11 @@ const deleteGroupDP = asyncHandler(async (req, res) => {
     throw new Error("Não é possível excluir a Foto do grupo!");
   }
 
-  const deletePromise = cloudinary.uploader.destroy(cloudinary_id); // ( Refatorar para usar qq repositório )
+  const deletePromise = cloudinary.uploader.destroy(avatar_id); // ( Refatorar para usar qq repositório )
   const updatePromise = ChatModel.findByIdAndUpdate(
     chatId,
     {
-      cloudinary_id: "", // ( Refatorar para usar qq repositório )
+      avatar_id: "", // ( Refatorar para usar qq repositório )
       chatDisplayPic: process.env.DEFAULT_GROUP_DP,
     },
     { new: true }
@@ -165,7 +165,7 @@ const deleteGroupDP = asyncHandler(async (req, res) => {
 
 const updateGroupDP = asyncHandler(async (req, res) => {
   const displayPic = req.file;
-  const { currentDP, cloudinary_id, chatId } = req.body; // ( Refatorar para usar qq repositório )
+  const { currentDP, avatar_id, chatId } = req.body; // ( Refatorar para usar qq repositório )
 
   if (!displayPic || !currentDP || !chatId) {
     res.status(400);
@@ -175,7 +175,7 @@ const updateGroupDP = asyncHandler(async (req, res) => {
   const uploadPromise = cloudinary.uploader.upload(displayPic.path); // ( Refatorar para usar qq repositório )
   // Exclua a Imagem de Exibição (Display Pic = DP) existente somente se não for o Imagem de Exibição (Display Pic = DP) padrão
   const destroyPromise = !currentDP.endsWith(process.env.DEFAULT_GROUP_DP)
-    ? cloudinary.uploader.destroy(cloudinary_id) // ( Refatorar para usar qq repositório )
+    ? cloudinary.uploader.destroy(avatar_id) // ( Refatorar para usar qq repositório )
     : Promise.resolve();
 
   const [uploadResponse] = await Promise.all([uploadPromise, destroyPromise]);
@@ -184,7 +184,7 @@ const updateGroupDP = asyncHandler(async (req, res) => {
   const updatePromise = ChatModel.findByIdAndUpdate(
     chatId,
     {
-      cloudinary_id: uploadResponse.public_id, // ( Refatorar para usar qq repositório )
+      avatar_id: uploadResponse.public_id, // ( Refatorar para usar qq repositório )
       chatDisplayPic: uploadResponse.secure_url,
     },
     { new: true }
@@ -282,7 +282,7 @@ const addUsersToGroup = asyncHandler(async (req, res) => {
 });
 
 const deleteGroupChat = asyncHandler(async (req, res) => {
-  const { currentDP, cloudinary_id, chatId } = req.body; // ( Refatorar para usar qq repositório )
+  const { currentDP, avatar_id, chatId } = req.body; // ( Refatorar para usar qq repositório )
 
   if (!currentDP || !chatId) {
     res.status(400);
@@ -290,7 +290,7 @@ const deleteGroupChat = asyncHandler(async (req, res) => {
   }
 
   const deleteDpPromise = !currentDP.endsWith(process.env.DEFAULT_GROUP_DP)
-    ? cloudinary.uploader.destroy(cloudinary_id) // ( Refatorar para usar qq repositório )
+    ? cloudinary.uploader.destroy(avatar_id) // ( Refatorar para usar qq repositório )
     : Promise.resolve();
   const deleteGroupPromise = ChatModel.findByIdAndDelete(chatId);
 

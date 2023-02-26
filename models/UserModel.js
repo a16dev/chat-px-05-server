@@ -13,7 +13,7 @@ const userSchema = new Schema(
     email: { type: String, required: true, trim: true, unique: true },
     password: { type: String, required: true, trim: true },
     notifications: [{ type: ObjectId, ref: "Message" }],
-    cloudinary_id: { type: String, trim: true, default: "" }, // ( Refatorar para usar qq repositório )
+    avatar_id: { type: String, trim: true, default: "" }, // ( Refatorar para usar qq repositório )
     profilePic: {
       type: String,
       trim: true,

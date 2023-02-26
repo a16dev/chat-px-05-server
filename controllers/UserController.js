@@ -25,13 +25,13 @@ const registerUser = asyncHandler(async (req, res) => {
     // Faz Upload para Cloudinary e, em seguida, excluir do servidor
     const uploadResponse = await cloudinary.uploader.upload(profilePic.path); // ( Refatorar para usar qq repositório )
     profilePicDetails = {
-      cloudinary_id: uploadResponse.public_id, // ( Refatorar para usar qq repositório )
+      avatar_id: uploadResponse.public_id, // ( Refatorar para usar qq repositório )
       profilePic: uploadResponse.secure_url,
     };
     deleteFile(profilePic.path);
   }
 
-  // Usar esta condição como cloudinary_id e profilePic tem valores padrão, se não for especificado
+  // Usar esta condição como avatar_id e profilePic tem valores padrão, se não for especificado
   const newUserDetails = profilePicDetails
     ? {
         name,
@@ -54,7 +54,7 @@ const registerUser = asyncHandler(async (req, res) => {
     name: createdUser.name,
     email: createdUser.email,
     notifications: createdUser.notifications,
-    cloudinary_id: createdUser.cloudinary_id, // ( Refatorar para usar qq repositório )
+    avatar_id: createdUser.avatar_id, // ( Refatorar para usar qq repositório )
     profilePic: createdUser.profilePic,
     token: generateToken(createdUser._id),
     /* A sessão expira após 1 dia */
@@ -83,7 +83,7 @@ const authenticateUser = asyncHandler(async (req, res) => {
       {
         path: "chat",
         model: "Chat",
-        select: "-groupAdmins -cloudinary_id", // ( Refatorar para usar qq repositório )
+        select: "-groupAdmins -avatar_id", // ( Refatorar para usar qq repositório )
         populate: {
           path: "users",
           model: "User",
@@ -101,7 +101,7 @@ const authenticateUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       notifications: user.notifications,
-      cloudinary_id: user.cloudinary_id, // ( Refatorar para usar qq repositório )
+      avatar_id: user.avatar_id, // ( Refatorar para usar qq repositório )
       profilePic: user.profilePic,
       token: generateToken(user._id),
       /* A sessão expira após 1 dia */
@@ -161,7 +161,7 @@ const updateUserName = asyncHandler(async (req, res) => {
         {
           path: "chat",
           model: "Chat",
-          select: "-groupAdmins -cloudinary_id", // ( Refatorar para usar qq repositório )
+          select: "-groupAdmins -avatar_id", // ( Refatorar para usar qq repositório )
           populate: {
             path: "users",
             model: "User",
@@ -222,7 +222,7 @@ const updateUserPassword = asyncHandler(async (req, res) => {
 
 const updateUserProfilePic = asyncHandler(async (req, res) => {
   const newProfilePic = req.file;
-  const { currentProfilePic, cloudinary_id } = req.body; // ( Refatorar para usar qq repositório )
+  const { currentProfilePic, avatar_id } = req.body; // ( Refatorar para usar qq repositório )
   const loggedInUser = req.user?._id;
 
   if (!newProfilePic || !currentProfilePic) {
@@ -231,7 +231,7 @@ const updateUserProfilePic = asyncHandler(async (req, res) => {
   }
   // Exclui a foto de perfil existente somente se não for a padrão
   if (!currentProfilePic.endsWith(process.env.REACT_APP_DEFAULT_USER_DP)) {
-    cloudinary.uploader.destroy(cloudinary_id); // ( Refatorar para usar qq repositório )
+    cloudinary.uploader.destroy(avatar_id); // ( Refatorar para usar qq repositório )
   }
   const uploadResponse = await cloudinary.uploader.upload(newProfilePic.path); // ( Refatorar para usar qq repositório )
   deleteFile(newProfilePic.path);
@@ -239,7 +239,7 @@ const updateUserProfilePic = asyncHandler(async (req, res) => {
   const updatedUser = await UserModel.findByIdAndUpdate(
     loggedInUser,
     {
-      cloudinary_id: uploadResponse.public_id, // ( Refatorar para usar qq repositório )
+      avatar_id: uploadResponse.public_id, // ( Refatorar para usar qq repositório )
       profilePic: uploadResponse.secure_url,
     },
     { new: true }
@@ -257,7 +257,7 @@ const updateUserProfilePic = asyncHandler(async (req, res) => {
         {
           path: "chat",
           model: "Chat",
-          select: "-groupAdmins -cloudinary_id", // ( Refatorar para usar qq repositório )
+          select: "-groupAdmins -avatar_id", // ( Refatorar para usar qq repositório )
           populate: {
             path: "users",
             model: "User",
@@ -276,7 +276,7 @@ const updateUserProfilePic = asyncHandler(async (req, res) => {
 });
 
 const deleteUserProfilePic = asyncHandler(async (req, res) => {
-  const { currentProfilePic, cloudinary_id } = req.body; // ( Refatorar para usar qq repositório )
+  const { currentProfilePic, avatar_id } = req.body; // ( Refatorar para usar qq repositório )
   const loggedInUser = req.user?._id;
 
   if (!currentProfilePic) {
@@ -290,11 +290,11 @@ const deleteUserProfilePic = asyncHandler(async (req, res) => {
     throw new Error("Não é possível excluir a foto do perfil de usuário padrão!");
   }
 
-  const deletePromise = cloudinary.uploader.destroy(cloudinary_id); // ( Refatorar para usar qq repositório )
+  const deletePromise = cloudinary.uploader.destroy(avatar_id); // ( Refatorar para usar qq repositório )
   const updatePromise = UserModel.findByIdAndUpdate(
     loggedInUser,
     {
-      cloudinary_id: "", // ( Refatorar para usar qq repositório )
+      avatar_id: "", // ( Refatorar para usar qq repositório )
       profilePic: process.env.DEFAULT_USER_DP,
     },
     { new: true }
@@ -312,7 +312,7 @@ const deleteUserProfilePic = asyncHandler(async (req, res) => {
         {
           path: "chat",
           model: "Chat",
-          select: "-groupAdmins -cloudinary_id", // ( Refatorar para usar qq repositório )
+          select: "-groupAdmins -avatar_id", // ( Refatorar para usar qq repositório )
           populate: {
             path: "users",
             model: "User",
@@ -356,7 +356,7 @@ const addNotification = async (notificationId, userId) => {
           {
             path: "chat",
             model: "Chat",
-            select: "-groupAdmins -cloudinary_id", // ( Refatorar para usar qq repositório )
+            select: "-groupAdmins -avatar_id", // ( Refatorar para usar qq repositório )
             populate: {
               path: "users",
               model: "User",
@@ -425,7 +425,7 @@ const deleteNotifications = asyncHandler(async (req, res) => {
         {
           path: "chat",
           model: "Chat",
-          select: "-groupAdmins -cloudinary_id", // ( Refatorar para usar qq repositório )
+          select: "-groupAdmins -avatar_id", // ( Refatorar para usar qq repositório )
           populate: {
             path: "users",
             model: "User",

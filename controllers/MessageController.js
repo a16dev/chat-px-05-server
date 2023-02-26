@@ -90,7 +90,7 @@ const sendMessage = asyncHandler(async (req, res) => {
     .populate({
       path: "chat",
       model: "Chat",
-      select: "-groupAdmins -cloudinary_id", // ( Refatorar para usar qq repositório )
+      select: "-groupAdmins -avatar_id", // ( Refatorar para usar qq repositório )
     });
   // Execução paralela de promessas independentes
   const [updatedChat, populatedMessage] = await Promise.all([
@@ -187,7 +187,7 @@ const updateMessage = asyncHandler(async (req, res) => {
     .populate({
       path: "chat",
       model: "Chat",
-      select: "-groupAdmins -cloudinary_id", // ( Refatorar para usar qq repositório )
+      select: "-groupAdmins -avatar_id", // ( Refatorar para usar qq repositório )
     });
 
   if (!updatedMessage) {

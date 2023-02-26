@@ -29,15 +29,15 @@ app.use("/api/user", UserRoutes);
 app.use("/api/chat", ChatRoutes);
 app.use("/api/message", MessageRoutes);
 
-// ====================  Deployment ========================= //
-if (process.env.NODE_ENV === "production") {
-  // Estabelece o caminho para o frontend web (mais importante)
-  app.use(express.static(path.join(DIRNAME, "/frontend/build")));
-  app.get("*", (req, res) =>
-    res.sendFile(path.join(DIRNAME, "/frontend/build/index.html"))
-  );
-}
-// ====================  Deployment ========================= //
+// // ====================  Deployment ========================= //
+// if (process.env.NODE_ENV === "production") {
+//   // Estabelece o caminho para o frontend web (mais importante)
+//   app.use(express.static(path.join(DIRNAME, "/frontend/build")));
+//   app.get("*", (req, res) =>
+//     res.sendFile(path.join(DIRNAME, "/frontend/build/index.html"))
+//   );
+// }
+// // ====================  Deployment ========================= //
 
 // Middlewares de erros personalizados
 app.all("*", notFoundHandler);

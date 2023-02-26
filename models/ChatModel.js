@@ -10,7 +10,7 @@ const chatSchema = new Schema(
     users: [{ type: ObjectId, ref: "User" }],
     groupAdmins: [{ type: ObjectId, ref: "User" }],
     lastMessage: { type: ObjectId, ref: "Message" },
-    cloudinary_id: { type: String, trim: true }, // ( Refatorar para usar qq repositório )
+    avatar_id: { type: String, trim: true }, // ( Refatorar para usar qq repositório )
     chatDisplayPic: { type: String, trim: true },
   },
   { timestamps: true }
